@@ -1,0 +1,57 @@
+pipeline {
+  agent any
+
+  tools {
+    // Install the Maven version configured as "Default Maven" and add it to the path.
+    maven "Default Maven"
+  }
+
+  stages {
+     
+    stage('Git fetch') {
+      steps {
+        // Get some code from a GitHub repository
+        git 'https://github.com/spring-projects/spring-petclinic.git'
+      }
+    }
+    stage('Compile, Test, Package') {
+      steps {
+        // Run Maven on a Unix agent.
+        sh "mvn clean package"
+      }
+      post {
+        // If Maven was able to run the tests, even if some of the test
+        // failed, record the test results and archive the jar file.
+        success {
+          junit '**/target/surefire-reports/TEST-*.xml'
+          archiveArtifacts 'target/*.jar'
+          // Required plugins JaCoCo (Java Code Coverage) and plugin Code Coverage API
+          jacoco(execPattern: 'target/jacoco.exec')
+          publishCoverage adapters: [jacocoAdapter('target/site/jacoco/jacoco.xml')]
+        }
+      }
+    }
+	stage ('Analysis') {
+      steps {
+		  sh "mvn checkstyle:checkstyle site -DgenerateReports=false"
+	  }
+	  post {
+        // Record CheckStyle results. Warnings next generation plugin required
+        success {
+          recordIssues enabledForFailure: true, tool: checkStyle()
+        }
+	  }
+	}
+	
+	stage ('Deploy'){
+	    steps {
+	     sh '''
+	       ssh -i ~/.ssh/id_rsa_deploy ubuntu@webapps.mastertaiiual.tech "mkdir -p ~/spring-petclinic"
+	       scp -i ~/.ssh/id_rsa_deploy $WORKSPACE/target/*.jar ubuntu@webapps.mastertaiiual.tech:~/spring-petclinic 
+	       ssh -i ~/.ssh/id_rsa_deploy ubuntu@webapps.mastertaiiual.tech "if pgrep java; then pkill java; fi" 
+           ssh -i ~/.ssh/id_rsa_deploy ubuntu@webapps.mastertaiiual.tech "nohup java -jar ~/spring-petclinic/*.jar > ~/spring-petclinic/yourservice.log 2>&1 &"
+	     '''    
+	    }
+	}
+  }
+}
