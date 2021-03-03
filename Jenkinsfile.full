@@ -11,8 +11,8 @@ pipeline {
     stage('Git fetch') {
       steps {
         // Get some code from a GitHub repository
-        git 'https://github.com/spring-projects/spring-petclinic.git'
-      }
+            git branch:'main', url:'https://github.com/spring-projects/spring-petclinic.git'
+       }
     }
     stage('Compile, Test, Package') {
       steps {
@@ -46,10 +46,10 @@ pipeline {
 	stage ('Deploy'){
 	    steps {
 	     sh '''
-	       ssh -i ~/.ssh/id_rsa_deploy ubuntu@webapps.mastertaiiual.tech "mkdir -p ~/spring-petclinic"
-	       scp -i ~/.ssh/id_rsa_deploy $WORKSPACE/target/*.jar ubuntu@webapps.mastertaiiual.tech:~/spring-petclinic 
-	       ssh -i ~/.ssh/id_rsa_deploy ubuntu@webapps.mastertaiiual.tech "if pgrep java; then pkill java; fi" 
-           ssh -i ~/.ssh/id_rsa_deploy ubuntu@webapps.mastertaiiual.tech "nohup java -jar ~/spring-petclinic/*.jar > ~/spring-petclinic/yourservice.log 2>&1 &"
+	       ssh -i ~/.ssh/id_rsa_deploy212 ubuntu@webapps.mtaiiual.tech "mkdir -p ~/spring-petclinic"
+	       scp -i ~/.ssh/id_rsa_deploy212 $WORKSPACE/target/*.jar ubuntu@webapps.mtaiiual.tech:~/spring-petclinic 
+	       ssh -i ~/.ssh/id_rsa_deploy212 ubuntu@webapps.mtaiiual.tech "if pgrep java; then pkill java; fi" 
+         ssh -i ~/.ssh/id_rsa_deploy212 ubuntu@webapps.mtaiiual.tech "nohup java -jar ~/spring-petclinic/*.jar > ~/spring-petclinic/yourservice.log 2>&1 &"
 	     '''    
 	    }
 	}
