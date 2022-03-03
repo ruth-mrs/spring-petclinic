@@ -17,7 +17,7 @@ pipeline {
     stage('Compile, Test, Package') {
       steps {
         // Run Maven on a Unix agent.
-        sh "mvn clean package"
+        sh "mvn clean package -Dcheckstyle.skip"
       }
       post {
         // If Maven was able to run the tests, even if some of the test
