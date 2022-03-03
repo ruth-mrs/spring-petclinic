@@ -1,4 +1,6 @@
 target/*
+build/*
+.gradle/*
 .settings/*
 .classpath
 .project
@@ -11,3 +13,5 @@ target/*
 .vscode
 _site/
 secret/
+*.css
+!petclinic.css
