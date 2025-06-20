@@ -1,4 +1,4 @@
-FROM maven:3.8.4-openjdk-11-slim AS build
+FROM maven:3.8.4-openjdk-17-slim AS build
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ RUN mvn -B -f ./pom.xml -s /usr/share/maven/ref/settings-docker.xml package --no
 # RUN mvn -B -f ./pom.xml -s /usr/share/maven/ref/settings-docker.xml clean package 
 
 # Start with a base image containing Java runtime
-FROM openjdk:11-slim
+FROM openjdk:17-slim
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
 # The application's jar file
